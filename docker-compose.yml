@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  friends_service:
+    build: ./friends_service
+    ports:
+      - "8080:80"
+    env_file:
+      - ./friends_service/docker-compose.env
