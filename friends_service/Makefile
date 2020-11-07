@@ -1,3 +1,12 @@
+build:
+	docker-compose build friends_service
+
+run:
+	docker-compose up friends_service
+
+clean:
+	docker-compose down --rmi all
+
 requirements:
 	docker-compose run --rm friends_service_tools pip-compile
 	sudo chown $(USER):$(USER) requirements.txt
@@ -5,10 +14,10 @@ requirements:
 test:
 	docker-compose run --rm friends_service_tools pytest
 
+lint: lint-flake8 lint-bandit
+
 lint-flake8:
 	docker-compose run --rm friends_service_tools flake8 .
 
 lint-bandit:
 	docker-compose run --rm friends_service_tools bandit -r ./src
-
-lint: lint-flake8 lint-bandit
