@@ -1,8 +1,27 @@
 version: "3.8"
 services:
+
+  friends_service_tools:
+    build:
+      context: ./friends_service
+      dockerfile: DocerfileTools
+    volumes:
+      - "./friends_service:/project:rw"
+
   friends_service:
-    build: ./friends_service
+    build:
+      context: ./friends_service
+      dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "5057:5057"
     env_file:
       - ./friends_service/docker-compose.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=dev_user
+      - POSTGRES_PASSWORD=dev_password
+      - POSTGRES_DB=friends
