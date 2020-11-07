@@ -4,9 +4,25 @@ services:
   friends_service_tools:
     build:
       context: ./friends_service
-      dockerfile: DocerfileTools
+      dockerfile: DockerfileTools
     volumes:
-      - "./friends_service:/project:rw"
+      - "./friends_service:/app"
+
+  friends_service_tests:
+    build:
+      context: ./friends_service
+      dockerfile: DockerfileTests
+    env_file:
+      - ./friends_service/docker-compose-test.env
+    volumes:
+      - "./friends_service:/app"
+    depends_on:
+      - postgres_tests
+
+  postgres_tests:
+    image: postgres:13
+    environment:
+      - ./friends_service/docker-compose-test.env
 
   friends_service:
     build:
@@ -22,6 +38,4 @@ services:
   postgres:
     image: postgres:13
     environment:
-      - POSTGRES_USER=dev_user
-      - POSTGRES_PASSWORD=dev_password
-      - POSTGRES_DB=friends
+      - ./friends_service/docker-compose.env

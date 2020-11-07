@@ -1,5 +1,5 @@
 build:
-	docker-compose build friends_service
+	docker-compose build friends_service friends_service_tools friends_service_tests
 
 run:
 	docker-compose up friends_service
@@ -12,7 +12,7 @@ requirements:
 	sudo chown $(USER):$(USER) requirements.txt
 
 test:
-	docker-compose run --rm friends_service_tools pytest
+	docker-compose run --rm friends_service_tests pytest
 
 lint: lint-flake8 lint-bandit
 
