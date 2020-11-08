@@ -1,3 +1,4 @@
+language: python
 env:
   global:
     - DOCKER_COMPOSE_VERSION: 1.27.4
