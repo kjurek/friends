@@ -2,8 +2,8 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 import uuid
 
-from .db.database import engine, get_db
-from .db import models, crud
+from db.database import engine, get_db
+from db import models, crud
 
 models.Base.metadata.create_all(bind=engine)
 
