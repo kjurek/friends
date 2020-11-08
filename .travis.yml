@@ -1,0 +1,13 @@
+env:
+  matrix:
+    - SERVICE_DIR: "friends_service"
+
+services:
+  - docker
+
+before_script:
+  - cd ${SERVICE_DIR}
+
+script:
+  - make test
+  - make lint
