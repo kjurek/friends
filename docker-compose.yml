@@ -10,12 +10,20 @@ services:
     volumes:
       - "./friends_service:/app"
     depends_on:
+      postgres_tests:
+        condition: service_healthy
+    links:
       - postgres_tests
 
   postgres_tests:
     image: postgres:13
-    environment:
+    env_file:
       - ./friends_service/docker-compose-test.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_tests"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   friends_service:
     build:
@@ -26,9 +34,17 @@ services:
     env_file:
       - ./friends_service/docker-compose.env
     depends_on:
+      postgres:
+        condition: service_healthy
+    links:
       - postgres
 
   postgres:
     image: postgres:13
-    environment:
+    env_file:
       - ./friends_service/docker-compose.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
