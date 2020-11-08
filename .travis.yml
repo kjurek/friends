@@ -17,3 +17,6 @@ before_script:
 script:
   - make test
   - make lint
+
+after_script:
+  - make clean
