@@ -12,7 +12,7 @@ requirements:
 	sudo chown $(USER):$(USER) requirements.txt
 
 test:
-	docker-compose run --rm friends_service_tests pytest
+	docker-compose run --rm friends_service_tests pytest -s
 
 lint: lint-flake8 lint-bandit
 

@@ -2,43 +2,22 @@ from collections import defaultdict
 from fastapi import FastAPI
 import uuid
 
-app = FastAPI()
+from .controllers import FriendshipController
 
-db_users = dict()
-db_friends = defaultdict(set)
+app = FastAPI()
+db = defaultdict(set)
 
 
 @app.get("/friends/{user_id}")
 async def get_friends(user_id: uuid.UUID):
-    if user_id in db_users and user_id in db_friends:
-        return [{friend_id: db_users[friend_id]
-                 for friend_id in db_friends[user_id]}]
-    return []
+    return FriendshipController(db).get_friends(user_id)
 
 
-@app.post("/friends/{user_id}")
+@app.post("/friends/{user_id}/{friend_id}")
 async def add_friend(user_id: uuid.UUID, friend_id: uuid.UUID):
-    if user_id in db_users and friend_id in db_users:
-        db_friends[user_id].add(friend_id)
-        db_friends[friend_id].add(user_id)
-    return {}
+    FriendshipController(db).add_friend(user_id, friend_id)
 
 
-@app.delete("/friends/{user_id}")
+@app.delete("/friends/{user_id}/{friend_id}")
 async def remove_friend(user_id: uuid.UUID, friend_id: uuid.UUID):
-    if user_id in db_users and friend_id in db_users:
-        db_friends[user_id].remove(friend_id)
-        db_friends[friend_id].remove(user_id)
-    return {}
-
-
-@app.post("/users/{user}")
-async def create_user(user: str):
-    if user not in db_users.values():
-        db_users[uuid.uuid4()] = user
-    return {}
-
-
-@app.get("/users")
-async def get_users():
-    return db_users
+    FriendshipController(db).remove_friend(user_id, friend_id)
