@@ -2,10 +2,9 @@ FROM python:3.8-slim-buster as builder
 RUN pip install --upgrade pip
 COPY requirements.txt /tmp
 RUN pip install -r /tmp/requirements.txt
-RUN pip install pytest
+RUN pip install pytest pip-tools flake8 bandit
 
 FROM python:3.8-slim-buster as runner
 COPY --from=builder /usr/local /usr/local
 
 WORKDIR /app
-CMD pytest

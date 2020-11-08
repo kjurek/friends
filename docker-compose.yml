@@ -1,13 +1,6 @@
 version: "3.8"
 services:
 
-  friends_service_tools:
-    build:
-      context: ./friends_service
-      dockerfile: DockerfileTools
-    volumes:
-      - "./friends_service:/app"
-
   friends_service_tests:
     build:
       context: ./friends_service
