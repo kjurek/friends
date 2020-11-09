@@ -38,6 +38,23 @@ def test_non_existent_ids(test_client):
     assert response.json() == []
 
 
+def test_invalid_ids(test_client):
+    response = test_client.post("/friends/-1/1")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    response = test_client.post("/friends/1/-1")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    response = test_client.get("/friends/-1")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    response = test_client.delete("/friends/-1/1")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    response = test_client.delete("/friends/1/-1")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
 def test_already_existing_ids(test_client):
     response = test_client.post("/friends/0/1")
     assert response.status_code == status.HTTP_204_NO_CONTENT
