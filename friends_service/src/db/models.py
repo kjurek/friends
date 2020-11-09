@@ -1,10 +1,9 @@
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column
+from sqlalchemy import Column, Integer
 
 from .database import Base
 
 
 class Friendship(Base):
     __tablename__ = "friendships"
-    user_id = Column(UUID(as_uuid=True), primary_key=True, nullable=False)
-    friend_id = Column(UUID(as_uuid=True), primary_key=True, nullable=False)
+    user_id = Column(Integer, primary_key=True)
+    friend_id = Column(Integer, primary_key=True)

@@ -4,11 +4,11 @@ services:
   friends_service_tests:
     build:
       context: ./friends_service
-      dockerfile: DockerfileTests
+      dockerfile: docker/DockerfileTests
     env_file:
-      - ./friends_service/docker-compose-test.env
+      - ./friends_service/env/test.env
     volumes:
-      - "./friends_service:/app"
+      - "./friends_service:/friends_service"
     depends_on:
       postgres_tests:
         condition: service_healthy
@@ -18,7 +18,7 @@ services:
   postgres_tests:
     image: postgres:13
     env_file:
-      - ./friends_service/docker-compose-test.env
+      - ./friends_service/env/test.env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres_tests"]
       interval: 5s
@@ -28,11 +28,11 @@ services:
   friends_service:
     build:
       context: ./friends_service
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     ports:
       - "5057:5057"
     env_file:
-      - ./friends_service/docker-compose.env
+      - ./friends_service/env/dev.env
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,7 +42,7 @@ services:
   postgres:
     image: postgres:13
     env_file:
-      - ./friends_service/docker-compose.env
+      - ./friends_service/env/dev.env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
