@@ -8,4 +8,6 @@ COPY --from=builder /usr/local /usr/local
 COPY src/ /friends_service/src
 
 WORKDIR /friends_service
-CMD uvicorn src.main:app --host 0.0.0.0 --port 5057
+ARG UVICORN_WORKERS
+ARG APPLICATION_PORT
+CMD gunicorn src.main:app -b 0.0.0.0:${APPLICATION_PORT} -w ${UVICORN_WORKERS} -k uvicorn.workers.UvicornWorker
