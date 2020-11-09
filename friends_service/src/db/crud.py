@@ -51,7 +51,7 @@ def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
 def get_friends(db: Session, user_id: int) -> List[int]:
     friendships = db.query(models.Friendship).filter(models.Friendship.user_id == user_id).all()
     friendships_reversed = db.query(models.Friendship)\
-                            .filter(models.Friendship.friend_id == user_id).all()
+                             .filter(models.Friendship.friend_id == user_id).all()
     friendships = [friendship.friend_id for friendship in friendships]
     friendships.extend([friendship.user_id for friendship in friendships_reversed])
     return friendships
