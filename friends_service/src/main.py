@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from .db.database import engine, get_db
 from .db import models, crud
-
+from .integrations import setup_sentry
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -37,3 +37,6 @@ async def remove_friend(user_id: int = Path(..., ge=0), friend_id: int = Path(..
 
     crud.remove_friend(db, user_id, friend_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+app = setup_sentry(app)
