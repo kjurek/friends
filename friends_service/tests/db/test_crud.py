@@ -180,3 +180,28 @@ def test_get_friends_multiple_friends(database):
     assert crud.get_friends(database, 0) == [1, 2]
     assert crud.get_friends(database, 1) == [0, 2]
     assert crud.get_friends(database, 2) == [0, 1]
+
+
+def test_remove_friend_friendship_with_self_takes_no_effect(database):
+    friendship_models = [
+        models.Friendship(user_id=0, friend_id=1),
+        models.Friendship(user_id=1, friend_id=0),
+    ]
+    database.add_all(friendship_models)
+    database.commit()
+    assert get_all_friendships(database) == {
+        0: [1],
+        1: [0],
+    }
+
+    assert crud.remove_friend(database, 0, 0) is False
+    assert get_all_friendships(database) == {
+        0: [1],
+        1: [0],
+    }
+
+    assert crud.remove_friend(database, 1, 1) is False
+    assert get_all_friendships(database) == {
+        0: [1],
+        1: [0],
+    }
