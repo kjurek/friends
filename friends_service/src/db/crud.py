@@ -1,50 +1,52 @@
-from sqlalchemy import or_, and_
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import List
-import uuid
 
 from . import models
 
 
-def friendships_query(db: Session, user_id: uuid.UUID, friend_id: uuid.UUID):
+def friendship_query(db: Session, user_id: int, friend_id: int):
     return db.query(models.Friendship)\
-             .filter(or_(and_(models.Friendship.user_id == user_id,
-                              models.Friendship.friend_id == friend_id),
-                         and_(models.Friendship.user_id == friend_id,
-                              models.Friendship.friend_id == user_id)))
+             .filter(and_(models.Friendship.user_id == user_id,
+                          models.Friendship.friend_id == friend_id))
 
 
-def add_friend(db: Session, user_id: uuid.UUID, friend_id: uuid.UUID) -> None:
+def add_friend(db: Session, user_id: int, friend_id: int) -> bool:
     if user_id == friend_id:
-        return
+        return False
 
-    friendships = friendships_query(db, user_id, friend_id).all()
-    if friendships:
-        return
+    if friendship_query(db, user_id, friend_id).count() > 0:
+        return False
 
+    friendships = [
+        models.Friendship(user_id=user_id, friend_id=friend_id),
+        models.Friendship(user_id=friend_id, friend_id=user_id)
+    ]
     try:
-        friendships = [
-            models.Friendship(user_id=user_id, friend_id=friend_id),
-            models.Friendship(user_id=friend_id, friend_id=user_id)
-        ]
         db.add_all(friendships)
         db.commit()
     except SQLAlchemyError:
         db.rollback()
         raise
+    else:
+        return True
 
 
-def remove_friend(db: Session, user_id: uuid.UUID, friend_id: uuid.UUID) -> None:
+def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
+    rows_deleted = 0
     try:
-        rows_deleted = friendships_query(db, user_id, friend_id).delete()
-        if rows_deleted:
+        rows_deleted += friendship_query(db, user_id, friend_id).delete()
+        rows_deleted += friendship_query(db, friend_id, user_id).delete()
+        if rows_deleted > 0:
             db.commit()
     except SQLAlchemyError:
         db.rollback()
         raise
+    else:
+        return rows_deleted > 0
 
 
-def get_friends(db: Session, user_id: uuid.UUID) -> List[models.Friendship]:
+def get_friends(db: Session, user_id: int) -> List[int]:
     friendhips = db.query(models.Friendship).filter(models.Friendship.user_id == user_id).all()
     return [friendship.friend_id for friendship in friendhips]

@@ -1,5 +1,8 @@
+import pytest
+
+from fastapi import status
+from itertools import count
 from unittest import mock
-import uuid
 
 
 def test_invalid_path_returns_404(test_client):
@@ -9,119 +12,95 @@ def test_invalid_path_returns_404(test_client):
 
 
 @mock.patch("src.main.crud")
-def test_get_friends_returns_code_200_with_empty_response(mock_crud, test_client):
+def test_get_friends_returns_code_200_with_empty_list(mock_crud, test_client):
     mock_crud.get_friends.return_value = []
-    user_id = uuid.uuid4()
+    user_id = 1
     response = test_client.get(f"/friends/{user_id}")
 
     mock_crud.get_friends.assert_called_once_with(mock.ANY, user_id)
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
 
 @mock.patch("src.main.crud")
 def test_get_friends_returns_code_200_with_friends_in_response(mock_crud, test_client):
-    friends = [uuid.uuid4() for _ in range(10)]
+    gen_id = count()
+    friends = [str(next(gen_id)) for i in range(10)]
     mock_crud.get_friends.return_value = friends
-    user_id = uuid.uuid4()
+    user_id = next(gen_id)
     response = test_client.get(f"/friends/{user_id}")
 
     mock_crud.get_friends.assert_called_once_with(mock.ANY, user_id)
-    assert response.status_code == 200
-    assert response.json() == [str(friend_id) for friend_id in friends]
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == friends
 
 
+@pytest.mark.parametrize("user_id, expected_response", [
+    (-1, {'detail': [{'loc': ['path', 'user_id'], 'msg': 'ensure this value is greater than or equal to 0',
+                      'type': 'value_error.number.not_ge', 'ctx': {'limit_value': 0}}]}),
+    ("AAA", {'detail': [{'loc': ['path', 'user_id'],
+                         'msg': 'value is not a valid integer', 'type': 'type_error.integer'}]}),
+])
 @mock.patch("src.main.crud")
-def test_get_friends_with_invalid_user_id_returns_code_422(mock_crud, test_client):
-    user_id = "invalid user id"
+def test_get_friends_with_invalid_id_returns_code_422(mock_crud, test_client, user_id, expected_response):
     response = test_client.get(f"/friends/{user_id}")
 
     mock_crud.get_friends.assert_not_called()
-    assert response.status_code == 422
-    assert response.json() == {
-        'detail': [{'loc': ['path', 'user_id'],
-                    'msg': 'value is not a valid uuid',
-                    'type': 'type_error.uuid'}]
-    }
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json() == expected_response
 
 
 @mock.patch("src.main.crud")
-def test_add_friend_returns_code_200(mock_crud, test_client):
-    user_id = uuid.uuid4()
-    friend_id = uuid.uuid4()
+def test_add_friend_returns_code_204(mock_crud, test_client):
+    user_id, friend_id = 0, 1
     response = test_client.post(f"/friends/{user_id}/{friend_id}")
 
     mock_crud.add_friend.assert_called_once_with(mock.ANY, user_id, friend_id)
-    assert response.status_code == 200
-    assert response.json() is None
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
+@pytest.mark.parametrize("user_id, friend_id, expected_response", [
+    (-1, 0, {'detail': [{'loc': ['path', 'user_id'], 'msg': 'ensure this value is greater than or equal to 0',
+                         'type': 'value_error.number.not_ge', 'ctx': {'limit_value': 0}}]}),
+    (0, -1, {'detail': [{'loc': ['path', 'friend_id'], 'msg': 'ensure this value is greater than or equal to 0',
+                         'type': 'value_error.number.not_ge', 'ctx': {'limit_value': 0}}]}),
+    ("AAA", 0, {'detail': [{'loc': ['path', 'user_id'],
+                            'msg': 'value is not a valid integer', 'type': 'type_error.integer'}]}),
+    (0, "AAA", {'detail': [{'loc': ['path', 'friend_id'],
+                            'msg': 'value is not a valid integer', 'type': 'type_error.integer'}]})
+])
 @mock.patch("src.main.crud")
-def test_add_friend_with_invalid_user_id_returns_code_422(mock_crud, test_client):
-    user_id = "Invalid user id"
-    friend_id = uuid.uuid4()
+def test_add_friend_with_invalid_id_returns_code_422(mock_crud, test_client, user_id, friend_id, expected_response):
     response = test_client.post(f"/friends/{user_id}/{friend_id}")
 
     mock_crud.add_friend.assert_not_called()
-    assert response.status_code == 422
-    assert response.json() == {
-        'detail': [{'loc': ['path', 'user_id'],
-                    'msg': 'value is not a valid uuid',
-                    'type': 'type_error.uuid'}]
-    }
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json() == expected_response
 
 
 @mock.patch("src.main.crud")
-def test_add_friend_with_invalid_friend_id_returns_code_422(mock_crud, test_client):
-    user_id = uuid.uuid4()
-    friend_id = "Invalid friend id"
-    response = test_client.post(f"/friends/{user_id}/{friend_id}")
-
-    mock_crud.add_friend.assert_not_called()
-    assert response.status_code == 422
-    assert response.json() == {
-        'detail': [{'loc': ['path', 'friend_id'],
-                    'msg': 'value is not a valid uuid',
-                    'type': 'type_error.uuid'}]
-    }
-
-
-@mock.patch("src.main.crud")
-def test_remove_friend_returns_code_200(mock_crud, test_client):
-    user_id = uuid.uuid4()
-    friend_id = uuid.uuid4()
+def test_remove_friend_returns_code_204(mock_crud, test_client):
+    user_id, friend_id = 0, 1
     response = test_client.delete(f"/friends/{user_id}/{friend_id}")
 
     mock_crud.remove_friend.assert_called_once_with(mock.ANY, user_id, friend_id)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    assert response.json() is None
 
-
+@pytest.mark.parametrize("user_id, friend_id, expected_response", [
+    (-1, 0, {'detail': [{'loc': ['path', 'user_id'], 'msg': 'ensure this value is greater than or equal to 0',
+                         'type': 'value_error.number.not_ge', 'ctx': {'limit_value': 0}}]}),
+    (0, -1, {'detail': [{'loc': ['path', 'friend_id'], 'msg': 'ensure this value is greater than or equal to 0',
+                         'type': 'value_error.number.not_ge', 'ctx': {'limit_value': 0}}]}),
+    ("AAA", 0, {'detail': [{'loc': ['path', 'user_id'],
+                            'msg': 'value is not a valid integer', 'type': 'type_error.integer'}]}),
+    (0, "AAA", {'detail': [{'loc': ['path', 'friend_id'],
+                            'msg': 'value is not a valid integer', 'type': 'type_error.integer'}]})
+])
 @mock.patch("src.main.crud")
-def test_remove_friend_with_invalid_user_id_returns_code_422(mock_crud, test_client):
-    user_id = "Invalid user id"
-    friend_id = uuid.uuid4()
+def test_remove_friend_with_invalid_id_returns_code_422(mock_crud, test_client, user_id, friend_id, expected_response):
     response = test_client.delete(f"/friends/{user_id}/{friend_id}")
 
     mock_crud.remove_friend.assert_not_called()
-    assert response.status_code == 422
-    assert response.json() == {
-        'detail': [{'loc': ['path', 'user_id'],
-                    'msg': 'value is not a valid uuid',
-                    'type': 'type_error.uuid'}]
-    }
-
-
-@mock.patch("src.main.crud")
-def test_remove_friend_with_invalid_friend_id_returns_code_422(mock_crud, test_client):
-    user_id = uuid.uuid4()
-    friend_id = "Invalid friend id"
-    response = test_client.delete(f"/friends/{user_id}/{friend_id}")
-
-    mock_crud.remove_friend.assert_not_called()
-    assert response.status_code == 422
-    assert response.json() == {
-        'detail': [{'loc': ['path', 'friend_id'],
-                    'msg': 'value is not a valid uuid',
-                    'type': 'type_error.uuid'}]
-    }
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json() == expected_response

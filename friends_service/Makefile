@@ -17,7 +17,8 @@ test:
 lint: lint-flake8 lint-bandit
 
 lint-flake8:
-	docker-compose run --rm --no-deps friends_service_tests flake8 .
+	docker-compose run --rm --no-deps friends_service_tests flake8 src
+	docker-compose run --rm --no-deps friends_service_tests flake8 --ignore E501 tests
 
 lint-bandit:
 	docker-compose run --rm --no-deps friends_service_tests bandit -r ./src
