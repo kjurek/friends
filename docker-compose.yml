@@ -8,7 +8,7 @@ services:
     env_file:
       - ./friends_service/docker-compose-test.env
     volumes:
-      - "./friends_service:/app"
+      - "./friends_service:/friends_service"
     depends_on:
       postgres_tests:
         condition: service_healthy

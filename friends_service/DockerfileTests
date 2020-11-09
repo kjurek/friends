@@ -7,4 +7,4 @@ RUN pip install pytest pip-tools flake8 bandit ipdb
 FROM python:3.8-slim-buster as runner
 COPY --from=builder /usr/local /usr/local
 
-WORKDIR /app
+WORKDIR /friends_service
