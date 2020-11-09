@@ -16,15 +16,13 @@ def add_friend(db: Session, user_id: int, friend_id: int) -> bool:
     if user_id == friend_id:
         return False
 
-    if friendship_query(db, user_id, friend_id).count() > 0:
+    if friendship_query(db, user_id, friend_id).count() > 0 or \
+       friendship_query(db, friend_id, user_id).count() > 0:
         return False
 
-    friendships = [
-        models.Friendship(user_id=user_id, friend_id=friend_id),
-        models.Friendship(user_id=friend_id, friend_id=user_id)
-    ]
     try:
-        db.add_all(friendships)
+        friendship = models.Friendship(user_id=user_id, friend_id=friend_id)
+        db.add(friendship)
         db.commit()
     except SQLAlchemyError:
         db.rollback()
@@ -52,4 +50,8 @@ def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
 
 def get_friends(db: Session, user_id: int) -> List[int]:
     friendhips = db.query(models.Friendship).filter(models.Friendship.user_id == user_id).all()
-    return [friendship.friend_id for friendship in friendhips]
+    friendhips_reversed = db.query(models.Friendship)\
+                            .filter(models.Friendship.friend_id == user_id).all()
+    friendships = [friendship.friend_id for friendship in friendhips]
+    friendships.extend([friendship.user_id for friendship in friendhips_reversed])
+    return friendships
