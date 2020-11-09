@@ -11,6 +11,7 @@ app = FastAPI()
 USER_ID_PATH = Path(..., title="Non-negative integer which identifies the user", ge=0)
 FRIEND_ID_PATH = Path(..., title="Non-negative integer which identifies users friend", ge=0)
 
+
 @app.get("/friends/{user_id}")
 async def get_friends(user_id: int = USER_ID_PATH, db: Session = Depends(get_db)):
     return crud.get_friends(db, user_id)
