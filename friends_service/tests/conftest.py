@@ -26,3 +26,10 @@ def clean_database(database):
         database.commit()
     except SQLAlchemyError:
         database.rollback()
+
+
+@pytest.fixture(autouse=True)
+def clean_cache():
+    yield
+    from src.cache import redis_cache
+    redis_cache.delete_all()

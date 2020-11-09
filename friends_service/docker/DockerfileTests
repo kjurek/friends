@@ -1,4 +1,6 @@
 FROM python:3.8-slim-buster as builder
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /usr/local/bin/wait
+RUN chmod +x /usr/local/bin/wait
 RUN pip install --upgrade pip
 COPY requirements.txt /tmp
 RUN pip install -r /tmp/requirements.txt
@@ -8,3 +10,4 @@ FROM python:3.8-slim-buster as runner
 COPY --from=builder /usr/local /usr/local
 
 WORKDIR /friends_service
+CMD /usr/local/bin/wait && pytest -s -vv
