@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, Depends, Path, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from .db.database import engine, get_db
@@ -14,15 +15,25 @@ async def get_friends(user_id: int = Path(..., ge=0), db: Session = Depends(get_
     return crud.get_friends(db, user_id)
 
 
-@app.post("/friends/{user_id}/{friend_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.post("/friends/{user_id}/{friend_id}")
 async def add_friend(user_id: int = Path(..., ge=0), friend_id: int = Path(..., ge=0),
                      db: Session = Depends(get_db)):
+    if user_id == friend_id:
+        message = {"reason": f"user_id [{user_id}] cannot be the same as friend_id [{friend_id}]"}
+        return JSONResponse(content=message,
+                            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
     crud.add_friend(db, user_id, friend_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.delete("/friends/{user_id}/{friend_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/friends/{user_id}/{friend_id}")
 async def remove_friend(user_id: int = Path(..., ge=0), friend_id: int = Path(..., ge=0),
                         db: Session = Depends(get_db)):
+    if user_id == friend_id:
+        message = {"reason": f"user_id [{user_id}] cannot be the same as friend_id [{friend_id}]"}
+        return JSONResponse(content=message,
+                            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
     crud.remove_friend(db, user_id, friend_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

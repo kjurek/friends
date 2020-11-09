@@ -34,6 +34,9 @@ def add_friend(db: Session, user_id: int, friend_id: int) -> bool:
 
 
 def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
+    if user_id == friend_id:
+        return False
+
     rows_deleted = 0
     try:
         rows_deleted += friendship_query(db, user_id, friend_id).delete()
