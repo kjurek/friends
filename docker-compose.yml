@@ -10,20 +10,16 @@ services:
     volumes:
       - "./friends_service:/friends_service"
     depends_on:
-      postgres_tests:
-        condition: service_healthy
-    links:
       - postgres_tests
+      - redis_tests
 
   postgres_tests:
     image: postgres:13
     env_file:
       - ./friends_service/env/test.env
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres_tests"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+  redis_tests:
+    image: redis:latest
 
   friends_service:
     build:
@@ -34,17 +30,13 @@ services:
     env_file:
       - ./friends_service/env/dev.env
     depends_on:
-      postgres:
-        condition: service_healthy
-    links:
       - postgres
+      - redis
 
   postgres:
     image: postgres:13
     env_file:
       - ./friends_service/env/dev.env
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+  redis:
+    image: redis:latest
