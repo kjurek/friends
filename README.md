@@ -67,6 +67,7 @@ When application is running it publish following endpoints:
 ### CI/CD
 There is a simple travis configuration for building branches on github.
 It launches unit tests and linters.
+https://travis-ci.com/github/kjurek/friends
 
 ### Performance and monitoring
 Application is integrated with Sentry which tracks exceptions and application traffic.
