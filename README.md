@@ -23,7 +23,7 @@ make build
 ```
 
 ### Python requirements
-A `requirements.txt` generator, generates file from `requirements.in` file using proper python version.
+Requirements generator generates `requirements.txt` file from `requirements.in` file using proper python version.
 It may ask for a sudo password because docker is launching as a root user so generated file owner is root.
 To avoid this problem this make step includes `sudo chown $(USER):$(USER) requirements.txt` command.
 
@@ -54,7 +54,7 @@ make run
 ```
 
 ### Environments and configuration
-Currently there is only one production-like environment `dev` and it's called `friends_serice` in `docker-compose.yml`.
+Currently there is only one production-like environment `dev` and it's called `friends_service` in `docker-compose.yml`.
 There is also a testing service which has separate PostgreSQL and Redis instances to avoid deleting data from other environments, it's called `friends_service_tests`.
 Both services are configured using environment variables which are stored in the `friends_service/env` folder.
 
@@ -70,7 +70,7 @@ It launches unit tests and linters.
 
 ### Performance and monitoring
 Application is integrated with Sentry which tracks exceptions and application traffic.
-Sentry is private right now but I cant send invitations if needed.
+Currently only I have access to Sentry but I can send invitations if needed.
 https://sentry.io/organizations/karol-jurek/issues/?project=5509980
 
 ![Sentry issues](./images/sentry_issues.png)
