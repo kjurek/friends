@@ -25,9 +25,14 @@ async def add_friend(user_id: int = Path(..., ge=0, le=2147483647),
                      friend_id: int = Path(..., ge=0, le=2147483647),
                      db: Session = Depends(get_db)):
     if user_id == friend_id:
-        message = {"reason": f"user_id [{user_id}] cannot be the same as friend_id [{friend_id}]"}
-        return JSONResponse(content=message,
-                            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        content = {
+            "detail": [{
+                "loc": ["path", "user_id"],
+                "msg": f"user_id [{user_id}] cannot be the same as friend_id [{friend_id}]",
+                "type": "value_error"
+            }]
+        }
+        return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     handlers.add_friend(db, user_id, friend_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -38,9 +43,14 @@ async def remove_friend(user_id: int = Path(..., ge=0, le=2147483647),
                         friend_id: int = Path(..., ge=0, le=2147483647),
                         db: Session = Depends(get_db)):
     if user_id == friend_id:
-        message = {"reason": f"user_id [{user_id}] cannot be the same as friend_id [{friend_id}]"}
-        return JSONResponse(content=message,
-                            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        content = {
+            "detail": [{
+                "loc": ["path", "user_id"],
+                "msg": f"user_id [{user_id}] cannot be the same as friend_id [{friend_id}]",
+                "type": "value_error"
+            }]
+        }
+        return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     handlers.remove_friend(db, user_id, friend_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
