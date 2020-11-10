@@ -134,7 +134,7 @@ def test_add_friend_with_userid_and_friend_id_equal_returns_code_422(test_client
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert response.json() == {
         "detail": [{"loc": ["path", "user_id"],
-                    "msg": f"user_id [0] cannot be the same as friend_id [0]",
+                    "msg": "user_id [0] cannot be the same as friend_id [0]",
                     "type": "value_error"}]
     }
 
@@ -144,6 +144,6 @@ def test_remove_friend_with_userid_and_friend_id_equal_returns_code_422(test_cli
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert response.json() == {
         "detail": [{"loc": ["path", "user_id"],
-                    "msg": f"user_id [0] cannot be the same as friend_id [0]",
+                    "msg": "user_id [0] cannot be the same as friend_id [0]",
                     "type": "value_error"}]
     }
