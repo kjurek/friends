@@ -7,6 +7,13 @@ run:
 clean:
 	docker-compose down --rmi all
 
+alembic-migrate:
+	docker-compose run --rm friends_service_tests sh -c '/usr/local/bin/wait && alembic upgrade head'
+
+alembic-revision: alembic-migrate
+	docker-compose run --rm friends_service_tests sh -c '/usr/local/bin/wait && alembic revision --autogenerate'
+	sudo chown -R $(USER):$(USER) alembic
+
 requirements:
 	docker-compose run --rm --no-deps friends_service_tests pip-compile
 	sudo chown $(USER):$(USER) requirements.txt
