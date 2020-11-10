@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import List
 
-from .cache import redis_cache
-from .db import crud
+from src.cache import redis_cache
+from src.db import crud
 
 
 def add_friend(db: Session, user_id: int, friend_id: int) -> bool:

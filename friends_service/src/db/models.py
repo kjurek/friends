@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer
+from sqlalchemy.ext.declarative import declarative_base
 
-from .database import Base
+Base = declarative_base()
 
 
 class Friendship(Base):

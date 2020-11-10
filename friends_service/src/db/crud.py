@@ -3,7 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import List
 
-from . import models
+from src.db import models
 
 
 def friendship_query(db: Session, user_id: int, friend_id: int):

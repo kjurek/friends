@@ -19,20 +19,20 @@ def test_get_friends_returns_code_200_with_empty_list(mock_handlers, test_client
 
     mock_handlers.get_friends.assert_called_once_with(mock.ANY, user_id)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == []
+    assert response.json() == {"user": user_id, "friends": []}
 
 
 @mock.patch("src.main.handlers")
 def test_get_friends_returns_code_200_with_friends_in_response(mock_handlers, test_client):
     gen_id = count()
-    friends = [str(next(gen_id)) for i in range(10)]
+    friends = [next(gen_id) for i in range(10)]
     mock_handlers.get_friends.return_value = friends
     user_id = next(gen_id)
     response = test_client.get(f"/friends/{user_id}")
 
     mock_handlers.get_friends.assert_called_once_with(mock.ANY, user_id)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == friends
+    assert response.json() == {"user": user_id, "friends": friends}
 
 
 @pytest.mark.parametrize("user_id, expected_response", [
