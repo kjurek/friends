@@ -1,7 +1,7 @@
 # Friends application
 
 ## Build status
-[![Build Status](https://travis-ci.org/kjurek/friends.svg?branch=master)](https://travis-ci.org/kjurek/friends)
+[![Build Status](https://travis-ci.com/kjurek/friends.svg?branch=master)](https://travis-ci.com/kjurek/friends)
 
 ## Architecture
 ![Architecture](./images/friends_architecture.svg)
