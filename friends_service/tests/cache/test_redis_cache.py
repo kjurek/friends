@@ -17,8 +17,10 @@ def test_write():
 def test_write_read_big_numbers():
     max_int = 2147483647
     redis_cache.write(0, [max_int])
+    redis_cache.write(max_int, [0])
     assert redis_cache.redis_interface.get(0).decode() == json.dumps([max_int])
     assert redis_cache.read(0) == [max_int]
+    assert redis_cache.read(max_int) == [0]
 
 
 def test_delete():
