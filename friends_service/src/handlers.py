@@ -6,13 +6,17 @@ from src.db import crud
 
 
 def add_friend(db: Session, user_id: int, friend_id: int) -> bool:
-    redis_cache.delete([user_id, friend_id])
-    return crud.add_friend(db, user_id, friend_id)
+    if crud.add_friend(db, user_id, friend_id):
+        redis_cache.delete([user_id, friend_id])
+        return True
+    return False
 
 
 def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
-    redis_cache.delete([user_id, friend_id])
-    return crud.remove_friend(db, user_id, friend_id)
+    if crud.remove_friend(db, user_id, friend_id):
+        redis_cache.delete([user_id, friend_id])
+        return True
+    return False
 
 
 def get_friends(db: Session, user_id: int) -> List[int]:
