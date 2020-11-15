@@ -28,7 +28,7 @@ It may ask for a sudo password because docker is launching as a root user so gen
 To avoid this problem this make step includes `sudo chown $(USER):$(USER) requirements.txt` command.
 
 ```
-make requirements
+make requirements.txt
 ```
 
 ### Linter
