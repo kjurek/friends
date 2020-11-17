@@ -7,7 +7,7 @@ from unittest import mock
 
 def test_invalid_path_returns_404(test_client):
     response = test_client.get("/invalid")
-    assert response.status_code == 404
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {'detail': 'Not Found'}
 
 

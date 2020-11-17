@@ -1,7 +1,7 @@
 .PHONY: build run clean alembic-migrate alembic-revision test lint lint-flake8 lint-bandit
 
 build:
-	docker-compose build friends_service friends_service_tests
+	docker-compose build
 
 run:
 	docker-compose up friends_service
